@@ -1,9 +1,20 @@
 
+import { db } from '../db';
+import { apiDesignsTable } from '../db/schema';
 import { type DeleteApiDesignInput } from '../schema';
+import { eq } from 'drizzle-orm';
 
 export const deleteApiDesign = async (input: DeleteApiDesignInput): Promise<{ success: boolean }> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is deleting an API design from the database by ID.
-    // It should return an object indicating whether the deletion was successful.
-    return Promise.resolve({ success: false });
+  try {
+    // Delete the API design by ID
+    const result = await db.delete(apiDesignsTable)
+      .where(eq(apiDesignsTable.id, input.id))
+      .execute();
+
+    // Check if any rows were affected (deleted)
+    return { success: (result.rowCount ?? 0) > 0 };
+  } catch (error) {
+    console.error('API design deletion failed:', error);
+    throw error;
+  }
 };
